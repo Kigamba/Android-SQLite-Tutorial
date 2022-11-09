@@ -1,12 +1,15 @@
 package com.hellohasan.sqlite_multiple_three_tables_crud.features.student_crud.student_list_show;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +36,8 @@ public class StudentListActivity extends AppCompatActivity implements StudentCru
     private TextView subjectCountTextView;
     private TextView takenSubjectCountTextView;
 
+    public static final String TAG = StudentListActivity.class.getName();
+
     private List<Student> studentList = new ArrayList<>();
     private StudentListAdapter adapter;
 
@@ -57,6 +62,59 @@ public class StudentListActivity extends AppCompatActivity implements StudentCru
                 studentCreateDialogFragment.show(getSupportFragmentManager(), Constants.CREATE_STUDENT);
             }
         });
+
+        // Run the new queries here
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                ReadOnlyDatabaseHelper readOnlyDatabaseHelper = new ReadOnlyDatabaseHelper();
+                while (true) {
+                    long start = System.currentTimeMillis();
+                    Log.e(TAG, "1# Started running query at " + start);
+                    Cursor cursor = readOnlyDatabaseHelper.getReadableDatabase().rawQuery("SELECT * FROM student WHERE name LIKE '%abc%'", null);
+
+                    int i = 0;
+                    while (cursor.moveToNext()) {
+                        // Do something here
+                        i++;
+                    }
+
+                    cursor.close();
+
+                    Log.e(TAG, "Total is = " + i);
+                    long stop = System.currentTimeMillis();
+                    Log.e(TAG, "#1 Stopped running queries at " + stop);
+                    Log.e(TAG, "#1 Took " + (stop - start) + " ms");
+                }
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                ReadOnlyDatabaseHelper readOnlyDatabaseHelper = new ReadOnlyDatabaseHelper();
+                while (true) {
+                    long start = System.currentTimeMillis();
+                    Log.e(TAG, "2# Started running query at " + start);
+                    Cursor cursor = readOnlyDatabaseHelper.getReadableDatabase().rawQuery("SELECT * FROM student WHERE name LIKE '%abc%'", null);
+
+                    int i = 0;
+                    while (cursor.moveToNext()) {
+                        // Do something here
+                        i++;
+                    }
+
+                    cursor.close();
+
+                    Log.e(TAG, "Total is = " + i);
+                    long stop = System.currentTimeMillis();
+                    Log.e(TAG, "#2 Stopped running queries at " + stop);
+                    Log.e(TAG, "#2 Took " + (stop - start) + " ms");
+                }
+            }
+        }).start();
     }
 
     @Override
